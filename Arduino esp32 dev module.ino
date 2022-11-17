@@ -1,6 +1,11 @@
+#include <TimeLib.h>
+
+// sensorUltra1
 int TriggPin = 17;
 int EcchoPin = 5;
 int V5 = 23;
+
+//sensorUltra2
 
 int LDRPines[2] = {12, 13};
 int V5Pines[2]  = {14, 27};
@@ -10,6 +15,7 @@ int columnas = 2;
 
 int matrizLDR[2][2] = {{0, 0}, {0, 0}};
 
+int estDesc = filas + columnas;
 
 void loopMatrizLDR(){
   for(int i = 0; i <= columnas -1; i++) // n-1, donde n es el numero de columnas
@@ -23,7 +29,7 @@ void loopMatrizLDR(){
       digitalWrite(V5Pines[1], HIGH);
       digitalWrite(V5Pines[0], LOW);
     }
-   	
+     
     //Serial.println(i);
     for(int j = 0; j <= filas -1; j++) //n-1, donde n es el numero de filas
     {
@@ -54,6 +60,27 @@ int valueMatrizLDR(){
   return count;
 }
 
+bool sensorUltra1(){
+  digitalWrite(V5, HIGH);
+
+  int difTiempo;
+  int distancia;
+  
+  digitalWrite(TriggPin, HIGH);
+  delay(1);
+  digitalWrite(TriggPin, LOW);
+  
+  difTiempo = pulseIn(EcchoPin, HIGH);
+  distancia = difTiempo / 58.2;
+  delay(200);
+
+  if(distancia <=200 && distancia >= 0){
+    return true;
+  }
+  else{
+    return false,
+  }
+}
 
 void setup()
 {
@@ -73,22 +100,14 @@ void setup()
 
 void loop()
 { 
-  
-  digitalWrite(V5, HIGH);
+  if(sensorUltra1()){
 
-  int difTiempo;
-  int distancia;
-  
-  digitalWrite(TriggPin, HIGH);
-  delay(1);
-  digitalWrite(TriggPin, LOW);
-  
-  difTiempo = pulseIn(EcchoPin, HIGH);
-  distancia = difTiempo / 58.2;
-  delay(200);
-  
-  if(distancia <=200 && distancia >= 0){
+    estDesc = estDesc -1;
 
+    if (estDesc < 0){
+      estDesc = 0;
+    }
+/*
     int matrizCopy[2][2];
 
     memcpy(matrizCopy, matrizLDR, sizeof(matrizLDR));    
@@ -106,9 +125,19 @@ void loop()
         delay(60000);
       }      
     }
+*/
   }
 
-  Serial.println(valueMatrizLDR());
-  delay(1500);
+  //sensorUltra2() => estDesc = estDesc +1;
+
+  if (minute() % 2 == 0){
+
+    if (estDesc != valueMatrizLDR()){ //Se verifica que sean iguales para luego cambiarlo si es que no son iguales con lo real
+      Serial.println(valueMatrizLDR()); //Se print lo que es real
+      estOcup = valueMatrizLDR();
+      }
+    }
+ 
+  Serial.println(estDesc); //Se print primero los estacionamientos "desocupados"
   
 }
