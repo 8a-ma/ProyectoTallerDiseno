@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <TimeLib.h>
 
-LiquidCrystal_I2C lcd(0x20, 16, 4);
+LiquidCrystal_I2C lcd(0x20, 16, 2);
 
 // sensorUltra1
 int TriggPin = 17;
@@ -136,7 +136,7 @@ void setup(){
 void loop(){ 
 
   digitalWrite(V5, HIGH);
- /*
+ 
   if(sensorUltra1()){
 
     estDesc = estDesc -1;
@@ -169,6 +169,6 @@ void loop(){
   Serial.println(valuePrint); //Se print primero los estacionamientos "desocupados"
   lcd.setCursor(0,1);
   lcd.print(String(valuePrint));
-  */
+  
   
 }
