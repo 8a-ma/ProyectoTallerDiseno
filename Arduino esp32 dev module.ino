@@ -1,8 +1,4 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
 #include <TimeLib.h>
-
-LiquidCrystal_I2C lcd(0x20, 16, 2);
 
 // sensorUltra1
 int TriggPin = 17;
@@ -13,6 +9,7 @@ int V5 = 21;
 int TriggPin2 = 23;
 int EcchoPin2 = 22;
 
+//<fotorresistencias
 int LDRPines[2] = {12, 13};
 int V5Pines[2]  = {14, 27};
 
@@ -22,7 +19,34 @@ int columnas = 2;
 int matrizLDR[2][2] = {{0, 0}, {0, 0}};
 
 int estDesc = filas + columnas;
+
+//Dislpay
 int valuePrint;
+
+const int DIGITOS[10][7] = {
+/*0*/ {0,0,0,0,0,0,1},
+/*1*/ {1,0,0,1,1,1,1},
+/*2*/ {0,0,1,0,0,1,0},
+/*3*/ {0,0,0,0,1,1,0},
+/*4*/ {1,0,0,1,1,0,0},
+/*5*/ {0,1,0,0,1,0,0},
+/*6*/ {0,1,0,0,0,0,0},
+/*7*/ {0,0,0,1,1,1,1},
+/*8*/ {0,0,0,0,0,0,0},
+/*9*/ {0,0,0,0,1,0,0}
+};
+const int OFF = HIGH;
+
+const int A = 36;
+const int B = 39;
+const int C = 34;
+const int D = 35;
+const int E = 32;
+const int F = 33;
+const int G = 25;
+ 
+const int N = 7;
+const int SEGMENTOS[N] = {A,B,C,D,E,F,G};
 
 void loopMatrizLDR(){
   for(int i = 0; i <= columnas -1; i++) // n-1, donde n es el numero de columnas
@@ -109,12 +133,20 @@ bool sensorUltra2(){
     return false;
   }
 }
+
+void print(int d){
+  for (int i=0; i<N; i++){
+    digitalWrite(SEGMENTOS[i], DIGITOS[d][i]);
+  }
+}
+
 void setup(){
   
   pinMode(EcchoPin, INPUT);
   pinMode(TriggPin, OUTPUT);
+  /*
   pinMode(EcchoPin2, INPUT);
-  pinMode(TriggPin2, OUTPUT);
+  pinMode(TriggPin2, OUTPUT);*/
   pinMode(V5, OUTPUT);
   
   pinMode(V5Pines[0], OUTPUT);
@@ -123,12 +155,10 @@ void setup(){
   pinMode(LDRPines[0], INPUT);
   pinMode(LDRPines[1], INPUT);
 
-  lcd.init();
-  lcd.backlight();
-  lcd.print("Hola Mundo");
-  lcd.setCursor(0,1);
-  
-  delay(10);
+  for (int i=0; i<N; i++){
+    pinMode(SEGMENTOS[i], OUTPUT);
+    digitalWrite(SEGMENTOS[i], OFF);//apagar
+  }
 
   Serial.begin(9600); 
 }
@@ -145,7 +175,7 @@ void loop(){
       estDesc = 0;
     }
   }
-
+/*
   if(sensorUltra2()){
 
     estDesc = estDesc +1;
@@ -153,7 +183,7 @@ void loop(){
     if (estDesc > 4){
       estDesc = 4;
     }
-  }
+  }*/
 
   valuePrint = estDesc;
 
@@ -167,8 +197,7 @@ void loop(){
    }
  
   Serial.println(valuePrint); //Se print primero los estacionamientos "desocupados"
-  lcd.setCursor(0,1);
-  lcd.print(String(valuePrint));
+  print(valuePrint);
   
   
 }
