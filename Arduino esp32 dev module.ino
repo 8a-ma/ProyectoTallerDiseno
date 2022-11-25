@@ -144,9 +144,8 @@ void setup(){
   
   pinMode(EcchoPin, INPUT);
   pinMode(TriggPin, OUTPUT);
-  /*
   pinMode(EcchoPin2, INPUT);
-  pinMode(TriggPin2, OUTPUT);*/
+  pinMode(TriggPin2, OUTPUT);
   pinMode(V5, OUTPUT);
   
   pinMode(V5Pines[0], OUTPUT);
@@ -175,7 +174,7 @@ void loop(){
       estDesc = 0;
     }
   }
-/*
+
   if(sensorUltra2()){
 
     estDesc = estDesc +1;
@@ -183,7 +182,7 @@ void loop(){
     if (estDesc > 4){
       estDesc = 4;
     }
-  }*/
+  }
 
   valuePrint = estDesc;
 
