@@ -1,28 +1,20 @@
 #include <TimeLib.h>
 
-// sensorUltra1
-int TriggPin = 17;
-int EcchoPin = 5;
-int V5 = 21;
+//            LDR
+const int V5Pines[2] = {4, 16};
+const int LDRPines[2] = {34, 35};
 
-//sensorUltra2
-int TriggPin2 = 23;
-int EcchoPin2 = 22;
+const int filas = 2;
+const int columnas = 2;
 
-//<fotorresistencias
-int LDRPines[2] = {12, 13};
-int V5Pines[2]  = {14, 27};
-
-int filas = 2;
-int columnas = 2;
-
-int matrizLDR[2][2] = {{0, 0}, {0, 0}};
-
-int estDesc = filas + columnas;
-
-//Dislpay
+long estDesc = filas*columnas;
 int valuePrint;
 
+int matrizLDR[2][2] = {{0, 0}, 
+                       {0, 0}};
+
+
+//            DISPLAY
 const int DIGITOS[10][7] = {
 /*0*/ {0,0,0,0,0,0,1},
 /*1*/ {1,0,0,1,1,1,1},
@@ -35,103 +27,60 @@ const int DIGITOS[10][7] = {
 /*8*/ {0,0,0,0,0,0,0},
 /*9*/ {0,0,0,0,1,0,0}
 };
+
 const int OFF = HIGH;
 
-const int A = 36;
-const int B = 39;
-const int C = 34;
-const int D = 35;
-const int E = 32;
-const int F = 33;
-const int G = 25;
+const int A = 32;
+const int B = 33;
+const int C = 25;
+const int D = 26;
+const int E = 27;
+const int F = 14;
+const int G = 12;
  
 const int N = 7;
 const int SEGMENTOS[N] = {A,B,C,D,E,F,G};
 
-void loopMatrizLDR(){
-  for(int i = 0; i <= columnas -1; i++) // n-1, donde n es el numero de columnas
-  {
-    if(i == 0) 
-    {
-      digitalWrite(V5Pines[0], HIGH);
-      digitalWrite(V5Pines[1], LOW);
-    }
-    else {
+//            SENSOR UTLRASONICO
+const int TrigPin = 5;
+const int EchoPin = 17;
+const int TrigPin2 = 23;
+const int EchoPin2 = 22;
+
+void loopLDR(){
+  for(int i=0; i < filas; i++){
+    if (i == 0){
       digitalWrite(V5Pines[1], HIGH);
       digitalWrite(V5Pines[0], LOW);
     }
-     
-    //Serial.println(i);
-    for(int j = 0; j <= filas -1; j++) //n-1, donde n es el numero de filas
-    {
-
-      if(analogRead(LDRPines[j]) <= 100)
-      {
-        matrizLDR[j][i] = 1;
+    else if(i == 1){
+      digitalWrite(V5Pines[1], LOW);
+      digitalWrite(V5Pines[0], HIGH);
+    }
+    
+    for(int j = 0; j < columnas; j++){
+      if(analogRead(LDRPines[j]) <= 100){
+        matrizLDR[i][j] = 1;
       }
-      else
-      {
-        matrizLDR[j][i] = 0;
+      else{
+        matrizLDR[i][j] = 0;
       }
       delay(10);
     }
   }
 }
 
+int ValueMLDR(){
+  int count;
 
-int valueMatrizLDR(){
-  int count = 0;
-  for(int i=0; i <= filas -1; i++){
-    for(int j=0; j <= columnas -1; j++){
-      if (matrizLDR[i][j] == 0){
+  for(int i=0; i < filas; i++){
+    for(int j=0; j < columnas; j++){
+      if(matrizLDR[i][j] == 0){
         count = count + 1;
-      } 
+      }
     }
   }
   return count;
-}
-
-bool sensorUltra1(){
-  
-
-  int difTiempo;
-  int distancia;
-  
-  digitalWrite(TriggPin, HIGH);
-  delay(1);
-  digitalWrite(TriggPin, LOW);
-  
-  difTiempo = pulseIn(EcchoPin, HIGH);
-  distancia = difTiempo / 58.2;
-  delay(200);
-
-  if(distancia <=200 && distancia >= 0){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-
-bool sensorUltra2(){
-
-  int difTiempo;
-  int distancia;
-  
-  digitalWrite(TriggPin2, HIGH);
-  delay(1);
-  digitalWrite(TriggPin2, LOW);
-  
-  difTiempo = pulseIn(EcchoPin2, HIGH);
-  distancia = difTiempo / 58.2;
-  delay(200);
-
-  if(distancia <=200 && distancia >= 0){
-    return true;
-  }
-  else{
-    return false;
-  }
 }
 
 void print(int d){
@@ -140,43 +89,81 @@ void print(int d){
   }
 }
 
-void setup(){
+bool sensorUltra1(){
   
-  pinMode(EcchoPin, INPUT);
-  pinMode(TriggPin, OUTPUT);
-  pinMode(EcchoPin2, INPUT);
-  pinMode(TriggPin2, OUTPUT);
-  pinMode(V5, OUTPUT);
+  long difTiempo;
+  long distancia;
   
+  digitalWrite(TrigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPin, LOW);
+  
+  difTiempo = pulseIn(EchoPin, HIGH);
+  distancia = difTiempo / 59;
+  delay(100);
+
+  if(distancia <=10 && distancia >= 0){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+bool sensorUltra2(){
+  
+  long difTiempo2;
+  long distancia2;
+  
+  digitalWrite(TrigPin2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPin2, LOW);
+  
+  difTiempo2 = pulseIn(EchoPin2, HIGH);
+  distancia2 = difTiempo2 / 59;
+  delay(100);
+
+  if(distancia2 <=10 && distancia2 >= 0){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+
+void setup() {
   pinMode(V5Pines[0], OUTPUT);
   pinMode(V5Pines[1], OUTPUT);
-
   pinMode(LDRPines[0], INPUT);
   pinMode(LDRPines[1], INPUT);
 
   for (int i=0; i<N; i++){
     pinMode(SEGMENTOS[i], OUTPUT);
-    digitalWrite(SEGMENTOS[i], OFF);//apagar
+    digitalWrite(SEGMENTOS[i], OFF);
   }
 
-  Serial.begin(9600); 
+  pinMode(TrigPin, OUTPUT);
+  pinMode(EchoPin, INPUT);
+  pinMode(TrigPin2, OUTPUT);
+  pinMode(EchoPin2, INPUT);
+  digitalWrite(TrigPin, LOW);
+  digitalWrite(TrigPin2, LOW);
+
+  Serial.begin(9600);
 }
 
-void loop(){ 
-
-  digitalWrite(V5, HIGH);
- 
+void loop() {
+  
   if(sensorUltra1()){
-
     estDesc = estDesc -1;
-
-    if (estDesc < 0){
+    
+    if(estDesc < 0){
       estDesc = 0;
     }
   }
 
-  if(sensorUltra2()){
-
+  else if(sensorUltra2()){
     estDesc = estDesc +1;
 
     if (estDesc > 4){
@@ -186,17 +173,15 @@ void loop(){
 
   valuePrint = estDesc;
 
-  if (second() % 5 == 0 || second() == 0){
-
-    if (estDesc != valueMatrizLDR()){ //Se verifica que sean iguales para luego cambiarlo si es que no son iguales con lo real
-      valuePrint = valueMatrizLDR(); //Se print lo que es real
-      estDesc = valueMatrizLDR();
+  if(second()%5==0 || second()==0){
+    loopLDR();
+    
+    if(estDesc != ValueMLDR()){
+      valuePrint = ValueMLDR();
+      estDesc =  ValueMLDR();
     }
+  }
 
-   }
- 
-  Serial.println(valuePrint); //Se print primero los estacionamientos "desocupados"
   print(valuePrint);
-  
-  
+  delay(1000);
 }
