@@ -183,5 +183,4 @@ void loop() {
   }
 
   print(valuePrint);
-  delay(1000);
 }
